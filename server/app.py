@@ -34,11 +34,18 @@ api.add_resource(PostOrderedByComments, '/api/posts_ordered_by_comments', endpoi
 
 # Create a GET route that goes to /api/most_popular_commenter. This route should return as json a dictionary like { commenter: "Bob" } of the commenter that's made the most comments. Since commenter isn't a model, think of how you can count the comments that has the same commenter name.
 class MostPopularCommenter(Resource):
-   def get(self):
-      comments = Comment.query.all()
-      commenters = [comment.commenter for comment in comments]
+  def get(self):
+    commenter = None
+    count = 0
+    commenters = [comment.commenter for comment in Comment.query.all()]
+    uniq_commenters = list(set(commenters))
+    for comment_commenter in uniq_commenters:
+      commenter_count = commenters.count(comment_commenter)
+      if commenter_count > count:
+        commenter = comment_commenter
+        count = commenter_count
+    return { "commenter": commenter }, 200
 
-      
 
 
 if __name__ == "__main__":
